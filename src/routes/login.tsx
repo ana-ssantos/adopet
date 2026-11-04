@@ -67,7 +67,7 @@ function Login() {
             <DialogTitle>Recuperar senha</DialogTitle>
             <DialogDescription>Enviaremos um link de recuperação para o seu e-mail.</DialogDescription>
           </DialogHeader>
-          <form onSubmit={(e) => { e.preventDefault(); if (!/\S+@\S+\.\S+/.test(resetEmail)) return toast.error("Informe um e-mail válido"); setForgot(false); toast.success("Link enviado!", { description: `Confira a caixa de entrada de ${resetEmail}` }); }} className="space-y-3">
+          <form onSubmit={(e) => { e.preventDefault(); if (!/\S+@\S+\.\S+/.test(resetEmail)) { toast.error("Informe um e-mail válido"); return; } setForgot(false); toast.success("Link enviado!", { description: `Confira a caixa de entrada de ${resetEmail}` }); }} className="space-y-3">
             <Field label="Email" name="reset" type="email" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} />
             <Button type="submit" className="w-full">Enviar link</Button>
           </form>

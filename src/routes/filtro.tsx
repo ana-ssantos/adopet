@@ -71,7 +71,7 @@ function FiltroPage() {
           </Section>
           <Section title="Idade">
             <div className="flex justify-between text-sm"><span>{d.age[0]} {d.age[0] === 1 ? "ano" : "anos"}</span><span className="font-semibold text-teal">{d.age[0]} – {d.age[1]} anos</span><span>{d.age[1]} anos</span></div>
-            <Slider min={0} max={15} step={1} value={d.age} onValueChange={(v) => setD({ ...d, age: [v[0], v[1]] as [number, number] })} aria-label="Faixa de idade" className="py-2" />
+            <Slider min={0} max={15} step={1} value={d.age} onValueChange={(v) => setD({ ...d, age: [v[0] ?? 0, v[1] ?? 15] as [number, number] })} aria-label="Faixa de idade" className="py-2" />
           </Section>
           <Section title="Tamanho">
             {(Object.keys(sizeLabel) as Size[]).map((s) => <Check key={s} label={sizeLabel[s]} checked={d.size.includes(s)} onChange={() => toggle("size", s)} />)}

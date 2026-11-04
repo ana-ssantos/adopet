@@ -56,7 +56,7 @@ function Home() {
   useEffect(() => {
     const el = sentinel.current;
     if (!el) return;
-    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) setVisible((v) => v + PAGE); });
+    const io = new IntersectionObserver(([e]) => { if (e?.isIntersecting) setVisible((v) => v + PAGE); });
     io.observe(el);
     return () => io.disconnect();
   }, [loading, list.length]);

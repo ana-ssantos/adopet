@@ -44,7 +44,7 @@ const validate = (f: F) => {
 function Cadastro() {
   const { register } = useApp();
   const navigate = useNavigate();
-  const [f, setF] = useState<F>({ name: "", email: "", phone: "", city: cities[0], age: "", password: "" });
+  const [f, setF] = useState<F>({ name: "", email: "", phone: "", city: cities[0] ?? "", age: "", password: "" });
   const [touched, setTouched] = useState<Partial<Record<keyof F, boolean>>>({});
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
