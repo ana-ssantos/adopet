@@ -27,7 +27,7 @@ export function Chip({ active, onClick, children, onRemove }: { active?: boolean
 }
 
 /** Campo com label e mensagem de erro. */
-export const Field = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement> & { label: string; error?: string; right?: ReactNode }>(
+export const Field = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement> & { label: string; error?: string | undefined; right?: ReactNode }>(
   ({ label, error, right, id, className, ...props }, ref) => {
     const fid = id ?? props.name;
     return (
