@@ -10,33 +10,73 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CadastroRouteImport } from './routes/cadastro'
+import { Route as CadastroAbrigoRouteImport } from './routes/cadastro-abrigo'
+import { Route as FiltroRouteImport } from './routes/filtro'
+import { Route as LoginRouteImport } from './routes/login'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CadastroRoute = CadastroRouteImport.update({
+  id: '/cadastro',
+  path: '/cadastro',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CadastroAbrigoRoute = CadastroAbrigoRouteImport.update({
+  id: '/cadastro-abrigo',
+  path: '/cadastro-abrigo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FiltroRoute = FiltroRouteImport.update({
+  id: '/filtro',
+  path: '/filtro',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/cadastro': typeof CadastroRoute
+  '/cadastro-abrigo': typeof CadastroAbrigoRoute
+  '/filtro': typeof FiltroRoute
+  '/login': typeof LoginRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/cadastro': typeof CadastroRoute
+  '/cadastro-abrigo': typeof CadastroAbrigoRoute
+  '/filtro': typeof FiltroRoute
+  '/login': typeof LoginRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/cadastro': typeof CadastroRoute
+  '/cadastro-abrigo': typeof CadastroAbrigoRoute
+  '/filtro': typeof FiltroRoute
+  '/login': typeof LoginRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/cadastro' | '/cadastro-abrigo' | '/filtro' | '/login'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/cadastro' | '/cadastro-abrigo' | '/filtro' | '/login'
+  id: '__root__' | '/' | '/cadastro' | '/cadastro-abrigo' | '/filtro' | '/login'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CadastroRoute: typeof CadastroRoute
+  CadastroAbrigoRoute: typeof CadastroAbrigoRoute
+  FiltroRoute: typeof FiltroRoute
+  LoginRoute: typeof LoginRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +88,43 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cadastro': {
+      id: '/cadastro'
+      path: '/cadastro'
+      fullPath: '/cadastro'
+      preLoaderRoute: typeof CadastroRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cadastro-abrigo': {
+      id: '/cadastro-abrigo'
+      path: '/cadastro-abrigo'
+      fullPath: '/cadastro-abrigo'
+      preLoaderRoute: typeof CadastroAbrigoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/filtro': {
+      id: '/filtro'
+      path: '/filtro'
+      fullPath: '/filtro'
+      preLoaderRoute: typeof FiltroRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CadastroRoute: CadastroRoute,
+  CadastroAbrigoRoute: CadastroAbrigoRoute,
+  FiltroRoute: FiltroRoute,
+  LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
