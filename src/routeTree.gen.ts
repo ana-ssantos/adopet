@@ -12,8 +12,12 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CadastroRouteImport } from './routes/cadastro'
 import { Route as CadastroAbrigoRouteImport } from './routes/cadastro-abrigo'
+import { Route as FavoritosRouteImport } from './routes/favoritos'
 import { Route as FiltroRouteImport } from './routes/filtro'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as MensagensRouteImport } from './routes/mensagens'
+import { Route as PerfilRouteImport } from './routes/perfil'
+import { Route as PetIdRouteImport } from './routes/pet.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -30,6 +34,11 @@ const CadastroAbrigoRoute = CadastroAbrigoRouteImport.update({
   path: '/cadastro-abrigo',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FavoritosRoute = FavoritosRouteImport.update({
+  id: '/favoritos',
+  path: '/favoritos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FiltroRoute = FiltroRouteImport.update({
   id: '/filtro',
   path: '/filtro',
@@ -40,43 +49,102 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MensagensRoute = MensagensRouteImport.update({
+  id: '/mensagens',
+  path: '/mensagens',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PerfilRoute = PerfilRouteImport.update({
+  id: '/perfil',
+  path: '/perfil',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PetIdRoute = PetIdRouteImport.update({
+  id: '/pet/$id',
+  path: '/pet/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cadastro': typeof CadastroRoute
   '/cadastro-abrigo': typeof CadastroAbrigoRoute
+  '/favoritos': typeof FavoritosRoute
   '/filtro': typeof FiltroRoute
   '/login': typeof LoginRoute
+  '/mensagens': typeof MensagensRoute
+  '/perfil': typeof PerfilRoute
+  '/pet/$id': typeof PetIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cadastro': typeof CadastroRoute
   '/cadastro-abrigo': typeof CadastroAbrigoRoute
+  '/favoritos': typeof FavoritosRoute
   '/filtro': typeof FiltroRoute
   '/login': typeof LoginRoute
+  '/mensagens': typeof MensagensRoute
+  '/perfil': typeof PerfilRoute
+  '/pet/$id': typeof PetIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/cadastro': typeof CadastroRoute
   '/cadastro-abrigo': typeof CadastroAbrigoRoute
+  '/favoritos': typeof FavoritosRoute
   '/filtro': typeof FiltroRoute
   '/login': typeof LoginRoute
+  '/mensagens': typeof MensagensRoute
+  '/perfil': typeof PerfilRoute
+  '/pet/$id': typeof PetIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/cadastro' | '/cadastro-abrigo' | '/filtro' | '/login'
+  fullPaths:
+    | '/'
+    | '/cadastro'
+    | '/cadastro-abrigo'
+    | '/favoritos'
+    | '/filtro'
+    | '/login'
+    | '/mensagens'
+    | '/perfil'
+    | '/pet/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/cadastro' | '/cadastro-abrigo' | '/filtro' | '/login'
-  id: '__root__' | '/' | '/cadastro' | '/cadastro-abrigo' | '/filtro' | '/login'
+  to:
+    | '/'
+    | '/cadastro'
+    | '/cadastro-abrigo'
+    | '/favoritos'
+    | '/filtro'
+    | '/login'
+    | '/mensagens'
+    | '/perfil'
+    | '/pet/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/cadastro'
+    | '/cadastro-abrigo'
+    | '/favoritos'
+    | '/filtro'
+    | '/login'
+    | '/mensagens'
+    | '/perfil'
+    | '/pet/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CadastroRoute: typeof CadastroRoute
   CadastroAbrigoRoute: typeof CadastroAbrigoRoute
+  FavoritosRoute: typeof FavoritosRoute
   FiltroRoute: typeof FiltroRoute
   LoginRoute: typeof LoginRoute
+  MensagensRoute: typeof MensagensRoute
+  PerfilRoute: typeof PerfilRoute
+  PetIdRoute: typeof PetIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -102,6 +170,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CadastroAbrigoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/favoritos': {
+      id: '/favoritos'
+      path: '/favoritos'
+      fullPath: '/favoritos'
+      preLoaderRoute: typeof FavoritosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/filtro': {
       id: '/filtro'
       path: '/filtro'
@@ -116,6 +191,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/mensagens': {
+      id: '/mensagens'
+      path: '/mensagens'
+      fullPath: '/mensagens'
+      preLoaderRoute: typeof MensagensRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/perfil': {
+      id: '/perfil'
+      path: '/perfil'
+      fullPath: '/perfil'
+      preLoaderRoute: typeof PerfilRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pet/$id': {
+      id: '/pet/$id'
+      path: '/pet/$id'
+      fullPath: '/pet/$id'
+      preLoaderRoute: typeof PetIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -123,8 +219,12 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CadastroRoute: CadastroRoute,
   CadastroAbrigoRoute: CadastroAbrigoRoute,
+  FavoritosRoute: FavoritosRoute,
   FiltroRoute: FiltroRoute,
   LoginRoute: LoginRoute,
+  MensagensRoute: MensagensRoute,
+  PerfilRoute: PerfilRoute,
+  PetIdRoute: PetIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
