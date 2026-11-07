@@ -1,7 +1,22 @@
 /**
  * Dados mockados do ADOPET. Edite aqui para adicionar/alterar pets e abrigos.
- * Fotos via loremflickr (placeholder), com "lock" para manter a mesma imagem.
+ * Fotos locais em src/assets/pets (geradas para o projeto).
  */
+import imgApc from "@/assets/pets/shelter-apc.jpg";
+import imgMaa from "@/assets/pets/shelter-maa.jpg";
+import imgAea from "@/assets/pets/shelter-aea.jpg";
+import imgThor from "@/assets/pets/thor.jpg";
+import imgMax from "@/assets/pets/max.jpg";
+import imgLuna from "@/assets/pets/luna.jpg";
+import imgApolo from "@/assets/pets/apolo.jpg";
+import imgMel from "@/assets/pets/mel.jpg";
+import imgSimba from "@/assets/pets/simba.jpg";
+import imgNina from "@/assets/pets/nina.jpg";
+import imgBob from "@/assets/pets/bob.jpg";
+import imgFrida from "@/assets/pets/frida.jpg";
+import imgPipoca from "@/assets/pets/pipoca.jpg";
+import imgZeus from "@/assets/pets/zeus.jpg";
+import imgAmora from "@/assets/pets/amora.jpg";
 export type Species = "cao" | "gato";
 export type Size = "pequeno" | "medio" | "grande";
 export type Coat = "curto" | "medio" | "longo";
@@ -33,18 +48,15 @@ export interface Pet {
   photos: string[];
 }
 
-const img = (kind: string, lock: number) => `https://loremflickr.com/480/480/${kind}?lock=${lock}`;
-
 export const shelters: Shelter[] = [
-  { id: "apc", name: "Abrigo Patinhas Cariocas", short: "Patinhas Cariocas", city: "Rio de Janeiro - RJ", phone: "(21) 99876-1234", avatar: img("puppy", 901) },
-  { id: "maa", name: "Meus Amigos Animais", short: "Meus Amigos Animais", city: "Niterói - RJ", phone: "(21) 98765-4321", avatar: img("kitten", 902) },
-  { id: "aea", name: "Abrigo Esperança Animal", short: "Esperança Animal", city: "Petrópolis - RJ", phone: "(24) 99123-4567", avatar: img("dog", 903) },
+  { id: "apc", name: "Abrigo Patinhas Cariocas", short: "Patinhas Cariocas", city: "Rio de Janeiro - RJ", phone: "(21) 99876-1234", avatar: imgApc },
+  { id: "maa", name: "Meus Amigos Animais", short: "Meus Amigos Animais", city: "Niterói - RJ", phone: "(21) 98765-4321", avatar: imgMaa },
+  { id: "aea", name: "Abrigo Esperança Animal", short: "Esperança Animal", city: "Petrópolis - RJ", phone: "(24) 99123-4567", avatar: imgAea },
 ];
 
-const p = (o: Omit<Pet, "photos"> & { lock: number }): Pet => {
-  const kind = o.species === "cao" ? "dog" : "cat";
-  const { lock, ...rest } = o;
-  return { ...rest, photos: [img(kind, lock), img(kind, lock + 100), img(kind, lock + 200)] };
+const p = (o: Omit<Pet, "photos"> & { photo: string }): Pet => {
+  const { photo, ...rest } = o;
+  return { ...rest, photos: [photo] };
 };
 
 export const pets: Pet[] = [
