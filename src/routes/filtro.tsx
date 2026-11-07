@@ -22,7 +22,7 @@ export const Route = createFileRoute("/filtro")({
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <fieldset className="space-y-3 rounded-2xl bg-card p-4 shadow-card">
+    <fieldset className="min-w-0 space-y-3 rounded-2xl bg-card p-4 shadow-card">
       <legend className="float-left mb-1 w-full text-sm font-bold">{title}</legend>
       {children}
     </fieldset>
