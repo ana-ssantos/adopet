@@ -1,7 +1,22 @@
 /**
  * Dados mockados do ADOPET. Edite aqui para adicionar/alterar pets e abrigos.
- * Fotos via loremflickr (placeholder), com "lock" para manter a mesma imagem.
+ * Fotos locais em src/assets/pets (geradas para o projeto).
  */
+import imgApc from "@/assets/pets/shelter-apc.jpg";
+import imgMaa from "@/assets/pets/shelter-maa.jpg";
+import imgAea from "@/assets/pets/shelter-aea.jpg";
+import imgThor from "@/assets/pets/thor.jpg";
+import imgMax from "@/assets/pets/max.jpg";
+import imgLuna from "@/assets/pets/luna.jpg";
+import imgApolo from "@/assets/pets/apolo.jpg";
+import imgMel from "@/assets/pets/mel.jpg";
+import imgSimba from "@/assets/pets/simba.jpg";
+import imgNina from "@/assets/pets/nina.jpg";
+import imgBob from "@/assets/pets/bob.jpg";
+import imgFrida from "@/assets/pets/frida.jpg";
+import imgPipoca from "@/assets/pets/pipoca.jpg";
+import imgZeus from "@/assets/pets/zeus.jpg";
+import imgAmora from "@/assets/pets/amora.jpg";
 export type Species = "cao" | "gato";
 export type Size = "pequeno" | "medio" | "grande";
 export type Coat = "curto" | "medio" | "longo";
@@ -33,33 +48,30 @@ export interface Pet {
   photos: string[];
 }
 
-const img = (kind: string, lock: number) => `https://loremflickr.com/480/480/${kind}?lock=${lock}`;
-
 export const shelters: Shelter[] = [
-  { id: "apc", name: "Abrigo Patinhas Cariocas", short: "Patinhas Cariocas", city: "Rio de Janeiro - RJ", phone: "(21) 99876-1234", avatar: img("puppy", 901) },
-  { id: "maa", name: "Meus Amigos Animais", short: "Meus Amigos Animais", city: "Niterói - RJ", phone: "(21) 98765-4321", avatar: img("kitten", 902) },
-  { id: "aea", name: "Abrigo Esperança Animal", short: "Esperança Animal", city: "Petrópolis - RJ", phone: "(24) 99123-4567", avatar: img("dog", 903) },
+  { id: "apc", name: "Abrigo Patinhas Cariocas", short: "Patinhas Cariocas", city: "Rio de Janeiro - RJ", phone: "(21) 99876-1234", avatar: imgApc },
+  { id: "maa", name: "Meus Amigos Animais", short: "Meus Amigos Animais", city: "Niterói - RJ", phone: "(21) 98765-4321", avatar: imgMaa },
+  { id: "aea", name: "Abrigo Esperança Animal", short: "Esperança Animal", city: "Petrópolis - RJ", phone: "(24) 99123-4567", avatar: imgAea },
 ];
 
-const p = (o: Omit<Pet, "photos"> & { lock: number }): Pet => {
-  const kind = o.species === "cao" ? "dog" : "cat";
-  const { lock, ...rest } = o;
-  return { ...rest, photos: [img(kind, lock), img(kind, lock + 100), img(kind, lock + 200)] };
+const p = (o: Omit<Pet, "photos"> & { photo: string }): Pet => {
+  const { photo, ...rest } = o;
+  return { ...rest, photos: [photo] };
 };
 
 export const pets: Pet[] = [
-  p({ id: "thor", name: "Thor", species: "cao", breed: "Vira-lata caramelo", ageYears: 3, size: "medio", coat: "curto", sex: "macho", vaccinated: true, dewormed: true, neutered: true, shelterId: "apc", personality: "Brincalhão, adora correr na praia e é ótimo com crianças. Aprende comandos rapidinho!", lock: 11 }),
-  p({ id: "max", name: "Max", species: "cao", breed: "Labrador", ageYears: 5, size: "grande", coat: "curto", sex: "macho", vaccinated: true, dewormed: true, neutered: false, shelterId: "maa", personality: "Calmo e muito carinhoso. Gosta de longos passeios e de cochilar no sol.", lock: 12 }),
-  p({ id: "luna", name: "Luna", species: "gato", breed: "SRD tigrada", ageYears: 2, size: "pequeno", coat: "curto", sex: "femea", vaccinated: true, dewormed: true, neutered: true, shelterId: "apc", personality: "Curiosa e independente, mas adora um colinho no fim do dia.", lock: 13 }),
-  p({ id: "apolo", name: "Apolo", species: "cao", breed: "Pastor Alemão mix", ageYears: 4, size: "grande", coat: "medio", sex: "macho", vaccinated: true, dewormed: false, neutered: true, shelterId: "aea", personality: "Protetor e leal. Ideal para casa com quintal e tutor ativo.", lock: 14 }),
-  p({ id: "mel", name: "Mel", species: "cao", breed: "Poodle mix", ageYears: 0.5, size: "pequeno", coat: "longo", sex: "femea", vaccinated: true, dewormed: true, neutered: false, shelterId: "maa", personality: "Filhote cheia de energia, ama brinquedos de pelúcia.", lock: 15 }),
-  p({ id: "simba", name: "Simba", species: "gato", breed: "Laranja SRD", ageYears: 0.7, size: "pequeno", coat: "medio", sex: "macho", vaccinated: false, dewormed: true, neutered: false, shelterId: "aea", personality: "Filhote aventureiro, vive escalando tudo. Muito sociável.", lock: 16 }),
-  p({ id: "nina", name: "Nina", species: "gato", breed: "Siamês mix", ageYears: 6, size: "pequeno", coat: "curto", sex: "femea", vaccinated: true, dewormed: true, neutered: true, shelterId: "maa", personality: "Tranquila e conversadeira. Perfeita para apartamento.", lock: 17 }),
-  p({ id: "bob", name: "Bob", species: "cao", breed: "Beagle", ageYears: 8, size: "medio", coat: "curto", sex: "macho", vaccinated: true, dewormed: true, neutered: true, shelterId: "apc", personality: "Idoso dócil, faro apurado e muito amor para dar.", lock: 18 }),
-  p({ id: "frida", name: "Frida", species: "gato", breed: "Persa mix", ageYears: 3, size: "medio", coat: "longo", sex: "femea", vaccinated: true, dewormed: false, neutered: true, shelterId: "aea", personality: "Elegante e carinhosa, gosta de ser escovada.", lock: 19 }),
-  p({ id: "pipoca", name: "Pipoca", species: "cao", breed: "Vira-lata", ageYears: 0.4, size: "pequeno", coat: "medio", sex: "femea", vaccinated: false, dewormed: true, neutered: false, shelterId: "apc", personality: "Filhotinha alegre, se dá bem com outros cães e gatos.", lock: 20 }),
-  p({ id: "zeus", name: "Zeus", species: "cao", breed: "Rottweiler mix", ageYears: 2, size: "grande", coat: "curto", sex: "macho", vaccinated: true, dewormed: true, neutered: false, shelterId: "maa", personality: "Grandão gentil, adora carinho na barriga.", lock: 21 }),
-  p({ id: "amora", name: "Amora", species: "gato", breed: "Preta SRD", ageYears: 1.5, size: "pequeno", coat: "curto", sex: "femea", vaccinated: true, dewormed: true, neutered: true, shelterId: "apc", personality: "Brincalhona e ronronante. Traz muita sorte!", lock: 22 }),
+  p({ id: "thor", name: "Thor", species: "cao", breed: "Vira-lata caramelo", ageYears: 3, size: "medio", coat: "curto", sex: "macho", vaccinated: true, dewormed: true, neutered: true, shelterId: "apc", personality: "Brincalhão, adora correr na praia e é ótimo com crianças. Aprende comandos rapidinho!", photo: imgThor }),
+  p({ id: "max", name: "Max", species: "cao", breed: "Labrador", ageYears: 5, size: "grande", coat: "curto", sex: "macho", vaccinated: true, dewormed: true, neutered: false, shelterId: "maa", personality: "Calmo e muito carinhoso. Gosta de longos passeios e de cochilar no sol.", photo: imgMax }),
+  p({ id: "luna", name: "Luna", species: "gato", breed: "SRD tigrada", ageYears: 2, size: "pequeno", coat: "curto", sex: "femea", vaccinated: true, dewormed: true, neutered: true, shelterId: "apc", personality: "Curiosa e independente, mas adora um colinho no fim do dia.", photo: imgLuna }),
+  p({ id: "apolo", name: "Apolo", species: "cao", breed: "Pastor Alemão mix", ageYears: 4, size: "grande", coat: "medio", sex: "macho", vaccinated: true, dewormed: false, neutered: true, shelterId: "aea", personality: "Protetor e leal. Ideal para casa com quintal e tutor ativo.", photo: imgApolo }),
+  p({ id: "mel", name: "Mel", species: "cao", breed: "Poodle mix", ageYears: 0.5, size: "pequeno", coat: "longo", sex: "femea", vaccinated: true, dewormed: true, neutered: false, shelterId: "maa", personality: "Filhote cheia de energia, ama brinquedos de pelúcia.", photo: imgMel }),
+  p({ id: "simba", name: "Simba", species: "gato", breed: "Laranja SRD", ageYears: 0.7, size: "pequeno", coat: "medio", sex: "macho", vaccinated: false, dewormed: true, neutered: false, shelterId: "aea", personality: "Filhote aventureiro, vive escalando tudo. Muito sociável.", photo: imgSimba }),
+  p({ id: "nina", name: "Nina", species: "gato", breed: "Siamês mix", ageYears: 6, size: "pequeno", coat: "curto", sex: "femea", vaccinated: true, dewormed: true, neutered: true, shelterId: "maa", personality: "Tranquila e conversadeira. Perfeita para apartamento.", photo: imgNina }),
+  p({ id: "bob", name: "Bob", species: "cao", breed: "Beagle", ageYears: 8, size: "medio", coat: "curto", sex: "macho", vaccinated: true, dewormed: true, neutered: true, shelterId: "apc", personality: "Idoso dócil, faro apurado e muito amor para dar.", photo: imgBob }),
+  p({ id: "frida", name: "Frida", species: "gato", breed: "Persa mix", ageYears: 3, size: "medio", coat: "longo", sex: "femea", vaccinated: true, dewormed: false, neutered: true, shelterId: "aea", personality: "Elegante e carinhosa, gosta de ser escovada.", photo: imgFrida }),
+  p({ id: "pipoca", name: "Pipoca", species: "cao", breed: "Vira-lata", ageYears: 0.4, size: "pequeno", coat: "medio", sex: "femea", vaccinated: false, dewormed: true, neutered: false, shelterId: "apc", personality: "Filhotinha alegre, se dá bem com outros cães e gatos.", photo: imgPipoca }),
+  p({ id: "zeus", name: "Zeus", species: "cao", breed: "Rottweiler mix", ageYears: 2, size: "grande", coat: "curto", sex: "macho", vaccinated: true, dewormed: true, neutered: false, shelterId: "maa", personality: "Grandão gentil, adora carinho na barriga.", photo: imgZeus }),
+  p({ id: "amora", name: "Amora", species: "gato", breed: "Preta SRD", ageYears: 1.5, size: "pequeno", coat: "curto", sex: "femea", vaccinated: true, dewormed: true, neutered: true, shelterId: "apc", personality: "Brincalhona e ronronante. Traz muita sorte!", photo: imgAmora }),
 ];
 
 export const cities = ["Rio de Janeiro - RJ", "Niterói - RJ", "São Gonçalo - RJ", "Duque de Caxias - RJ", "Nova Iguaçu - RJ", "Petrópolis - RJ", "Volta Redonda - RJ", "Campos dos Goytacazes - RJ", "Cabo Frio - RJ"];
