@@ -1,7 +1,7 @@
 import { useEffect, type ReactNode } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { Heart, Home, MessageCircle, User } from "lucide-react";
-import { useApp } from "@/store/app-store";
+import { homeFor, useApp, type Role } from "@/store/app-store";
 import { cn } from "@/lib/utils";
 
 /** Moldura de celular (centralizada no desktop, tela cheia no mobile). */
@@ -15,14 +15,16 @@ export function PhoneFrame({ children }: { children: ReactNode }) {
   );
 }
 
-/** Garante usuário logado; senão redireciona para /login. */
-export function RequireAuth({ children }: { children: ReactNode }) {
+/** Garante usuário logado com o role certo; senão redireciona. */
+export function RequireAuth({ children, role = "tutor" }: { children: ReactNode; role?: Role }) {
   const { ready, user } = useApp();
   const navigate = useNavigate();
   useEffect(() => {
-    if (ready && !user) navigate({ to: "/login", replace: true });
-  }, [ready, user, navigate]);
-  if (!ready || !user) return <div className="flex-1" aria-busy="true" />;
+    if (!ready) return;
+    if (!user) navigate({ to: "/login", replace: true });
+    else if (user.role !== role) navigate({ to: homeFor(user.role), replace: true });
+  }, [ready, user, role, navigate]);
+  if (!ready || !user || user.role !== role) return <div className="flex-1" aria-busy="true" />;
   return <>{children}</>;
 }
 

@@ -7,14 +7,15 @@ import { Logo } from "@/components/adopet/Logo";
 import { Field } from "@/components/adopet/bits";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useApp } from "@/store/app-store";
+import { homeFor, useApp } from "@/store/app-store";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/login")({
   head: () => ({ meta: [
-    { title: "Login Tutor — ADOPET" },
-    { name: "description", content: "Entre na sua conta ADOPET para adotar cães e gatos no RJ." },
-    { property: "og:title", content: "Login Tutor — ADOPET" },
-    { property: "og:description", content: "Entre na sua conta ADOPET para adotar cães e gatos no RJ." },
+    { title: "Entrar — ADOPET" },
+    { name: "description", content: "Entre na sua conta ADOPET de tutor ou abrigo." },
+    { property: "og:title", content: "Entrar — ADOPET" },
+    { property: "og:description", content: "Entre na sua conta ADOPET de tutor ou abrigo." },
   ] }),
   component: Login,
 });
@@ -30,17 +31,18 @@ function Login() {
   const [forgot, setForgot] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
 
-  useEffect(() => { if (ready && user) navigate({ to: "/" }); }, [ready, user, navigate]);
+  useEffect(() => { if (ready && user) navigate({ to: homeFor(user.role) }); }, [ready, user, navigate]);
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     if (!email || !password) return setError("Preencha e-mail e senha");
     setLoading(true);
-    setTimeout(() => {
+    login(email, password).then((r) => {
       setLoading(false);
-      if (!login(email, password)) setError("E-mail ou senha inválidos");
-    }, 500);
+      if (r.error || !r.role) return setError(r.error ?? "E-mail ou senha inválidos");
+      navigate({ to: homeFor(r.role), replace: true });
+    });
   };
 
   return (
@@ -48,7 +50,8 @@ function Login() {
       <div className="no-scrollbar animate-screen flex-1 overflow-y-auto">
         <div className="flex justify-center bg-teal pb-14 pt-12"><Logo size="lg" /></div>
         <form onSubmit={submit} noValidate className="-mt-8 mx-4 space-y-4 rounded-2xl bg-card p-5 shadow-card">
-          <h1 className="text-center text-xl font-bold underline decoration-brand-orange decoration-2 underline-offset-8">Login Tutor</h1>
+          <h1 className="text-center text-xl font-bold underline decoration-brand-orange decoration-2 underline-offset-8">Entrar</h1>
+          <p className="-mt-2 text-center text-xs text-muted-foreground">Para tutores e abrigos/doadores</p>
           <Field label="Email" name="email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
           <Field label="Senha" name="password" type={show ? "text" : "password"} autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)}
             right={<button type="button" onClick={() => setShow(!show)} aria-label={show ? "Ocultar senha" : "Mostrar senha"} className="p-2 text-muted-foreground">{show ? <EyeOff className="size-4" /> : <Eye className="size-4" />}</button>} />
@@ -67,7 +70,7 @@ function Login() {
             <DialogTitle>Recuperar senha</DialogTitle>
             <DialogDescription>Enviaremos um link de recuperação para o seu e-mail.</DialogDescription>
           </DialogHeader>
-          <form onSubmit={(e) => { e.preventDefault(); if (!/\S+@\S+\.\S+/.test(resetEmail)) { toast.error("Informe um e-mail válido"); return; } setForgot(false); toast.success("Link enviado!", { description: `Confira a caixa de entrada de ${resetEmail}` }); }} className="space-y-3">
+          <form onSubmit={async (e) => { e.preventDefault(); if (!/\S+@\S+\.\S+/.test(resetEmail)) { toast.error("Informe um e-mail válido"); return; } const { error } = await supabase.auth.resetPasswordForEmail(resetEmail.trim(), { redirectTo: `${window.location.origin}/reset-password` }); if (error) { toast.error("Não foi possível enviar o link"); return; } setForgot(false); toast.success("Link enviado!", { description: `Confira a caixa de entrada de ${resetEmail}` }); }} className="space-y-3">
             <Field label="Email" name="reset" type="email" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} />
             <Button type="submit" className="w-full">Enviar link</Button>
           </form>
