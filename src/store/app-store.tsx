@@ -26,7 +26,7 @@ export interface SignUpInput {
   phone: string;
   city?: string;
   age?: number;
-  document?: string;
+  document?: string | undefined;
 }
 
 export interface Filters {
