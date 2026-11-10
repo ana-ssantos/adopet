@@ -7,7 +7,7 @@ import { Logo } from "@/components/adopet/Logo";
 import { Field } from "@/components/adopet/bits";
 import { Button } from "@/components/ui/button";
 import { cities } from "@/data/pets";
-import { useApp } from "@/store/app-store";
+import { useApp, validatePassword } from "@/store/app-store";
 
 export const Route = createFileRoute("/cadastro")({
   head: () => ({ meta: [
@@ -27,7 +27,7 @@ export const maskPhone = (v: string) => {
   return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
 };
 
-type F = { name: string; email: string; phone: string; city: string; age: string; password: string };
+type F = { name: string; email: string; phone: string; city: string; age: string; password: string; confirm: string };
 const validate = (f: F) => {
   const e: Partial<Record<keyof F, string>> = {};
   if (f.name.trim().length < 3) e.name = "Informe seu nome completo";
@@ -37,14 +37,14 @@ const validate = (f: F) => {
   if (!f.age) e.age = "Informe sua idade";
   else if (age < 18) e.age = "É preciso ter 18 anos ou mais para adotar";
   else if (age > 120) e.age = "Idade inválida";
-  if (f.password.length < 6) e.password = "A senha precisa ter ao menos 6 caracteres";
+  Object.assign(e, validatePassword(f.password, f.confirm));
   return e;
 };
 
 function Cadastro() {
   const { register } = useApp();
   const navigate = useNavigate();
-  const [f, setF] = useState<F>({ name: "", email: "", phone: "", city: cities[0] ?? "", age: "", password: "" });
+  const [f, setF] = useState<F>({ name: "", email: "", phone: "", city: cities[0] ?? "", age: "", password: "", confirm: "" });
   const [touched, setTouched] = useState<Partial<Record<keyof F, boolean>>>({});
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -57,14 +57,15 @@ function Cadastro() {
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    setTouched({ name: true, email: true, phone: true, age: true, password: true });
+    setTouched({ name: true, email: true, phone: true, age: true, password: true, confirm: true });
     if (Object.keys(errors).length) return;
     setLoading(true);
-    setTimeout(() => {
-      register({ name: f.name.trim(), email: f.email.trim().toLowerCase(), phone: f.phone, city: f.city, age: Number(f.age), password: f.password });
-      toast.success("Cadastro realizado!", { description: "Agora é só fazer login." });
+    register({ role: "tutor", name: f.name.trim(), email: f.email, phone: f.phone, city: f.city, age: Number(f.age), password: f.password }).then((r) => {
+      setLoading(false);
+      if (r.error) return void toast.error(r.error);
+      toast.success("Cadastro realizado!", { description: r.needsConfirmation ? "Confirme pelo link enviado ao seu e-mail e faça login." : "Agora é só fazer login." });
       navigate({ to: "/login" });
-    }, 700);
+    });
   };
 
   return (
@@ -83,8 +84,9 @@ function Cadastro() {
             </select>
           </div>
           <Field label="Idade" name="age" type="number" min={18} inputMode="numeric" value={f.age} onChange={set("age")} error={err("age")} />
-          <Field label="Senha" name="password" type={show ? "text" : "password"} autoComplete="new-password" value={f.password} onChange={set("password")} error={err("password")}
+          <Field label="Senha" name="password" type={show ? "text" : "password"} autoComplete="new-password" value={f.password} onChange={set("password")} error={err("password")} placeholder="Mínimo de 8 caracteres"
             right={<button type="button" onClick={() => setShow(!show)} aria-label={show ? "Ocultar senha" : "Mostrar senha"} className="p-2 text-muted-foreground">{show ? <EyeOff className="size-4" /> : <Eye className="size-4" />}</button>} />
+          <Field label="Confirmar senha" name="confirm" type={show ? "text" : "password"} autoComplete="new-password" value={f.confirm} onChange={set("confirm")} error={err("confirm")} />
           <Button type="submit" size="lg" className="w-full" disabled={loading}>{loading ? "Registrando..." : "Registrar"}</Button>
           <p className="text-center text-sm text-muted-foreground">
             Já tem uma conta? <Link to="/login" className="font-semibold text-teal underline-offset-2 hover:underline">Fazer login</Link>

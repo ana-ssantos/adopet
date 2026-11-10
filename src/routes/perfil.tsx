@@ -26,7 +26,7 @@ function Perfil() {
         <p>{user?.city}</p>
       </div>
       <div className="px-4">
-        <Button size="lg" className="w-full" onClick={() => { logout(); navigate({ to: "/login" }); }}>Sair</Button>
+        <Button size="lg" className="w-full" onClick={async () => { await logout(); navigate({ to: "/login" }); }}>Sair</Button>
       </div>
     </TabScreen>
   );
