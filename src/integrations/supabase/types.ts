@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      adoption_requests: {
+        Row: {
+          created_at: string
+          has_other_pets: boolean
+          housing: string
+          id: string
+          name: string
+          pet_id: string
+          phone: string
+          reason: string
+          shelter_id: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          has_other_pets?: boolean
+          housing: string
+          id?: string
+          name: string
+          pet_id: string
+          phone: string
+          reason: string
+          shelter_id: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          has_other_pets?: boolean
+          housing?: string
+          id?: string
+          name?: string
+          pet_id?: string
+          phone?: string
+          reason?: string
+          shelter_id?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           age: number | null

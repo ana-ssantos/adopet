@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { TabScreen, TealHeader } from "@/components/adopet/AppShell";
 import { Button } from "@/components/ui/button";
 import { useApp } from "@/store/app-store";
@@ -25,7 +25,8 @@ function Perfil() {
         <p>{user?.phone}</p>
         <p>{user?.city}</p>
       </div>
-      <div className="px-4">
+      <div className="space-y-3 px-4">
+        <Button asChild size="lg" variant="outline" className="w-full"><Link to="/solicitacoes">Minhas solicitações</Link></Button>
         <Button size="lg" className="w-full" onClick={async () => { await logout(); navigate({ to: "/login" }); }}>Sair</Button>
       </div>
     </TabScreen>

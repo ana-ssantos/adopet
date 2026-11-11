@@ -19,6 +19,7 @@ import { Route as MensagensRouteImport } from './routes/mensagens'
 import { Route as PainelAbrigoRouteImport } from './routes/painel-abrigo'
 import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as SolicitacoesRouteImport } from './routes/solicitacoes'
 import { Route as PetIdRouteImport } from './routes/pet.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -71,6 +72,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
   path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SolicitacoesRoute = SolicitacoesRouteImport.update({
+  id: '/solicitacoes',
+  path: '/solicitacoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PetIdRoute = PetIdRouteImport.update({
   id: '/pet/$id',
   path: '/pet/$id',
@@ -88,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/painel-abrigo': typeof PainelAbrigoRoute
   '/perfil': typeof PerfilRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/solicitacoes': typeof SolicitacoesRoute
   '/pet/$id': typeof PetIdRoute
 }
 export interface FileRoutesByTo {
@@ -101,6 +108,7 @@ export interface FileRoutesByTo {
   '/painel-abrigo': typeof PainelAbrigoRoute
   '/perfil': typeof PerfilRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/solicitacoes': typeof SolicitacoesRoute
   '/pet/$id': typeof PetIdRoute
 }
 export interface FileRoutesById {
@@ -115,6 +123,7 @@ export interface FileRoutesById {
   '/painel-abrigo': typeof PainelAbrigoRoute
   '/perfil': typeof PerfilRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/solicitacoes': typeof SolicitacoesRoute
   '/pet/$id': typeof PetIdRoute
 }
 export interface FileRouteTypes {
@@ -130,6 +139,7 @@ export interface FileRouteTypes {
     | '/painel-abrigo'
     | '/perfil'
     | '/reset-password'
+    | '/solicitacoes'
     | '/pet/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -143,6 +153,7 @@ export interface FileRouteTypes {
     | '/painel-abrigo'
     | '/perfil'
     | '/reset-password'
+    | '/solicitacoes'
     | '/pet/$id'
   id:
     | '__root__'
@@ -156,6 +167,7 @@ export interface FileRouteTypes {
     | '/painel-abrigo'
     | '/perfil'
     | '/reset-password'
+    | '/solicitacoes'
     | '/pet/$id'
   fileRoutesById: FileRoutesById
 }
@@ -170,6 +182,7 @@ export interface RootRouteChildren {
   PainelAbrigoRoute: typeof PainelAbrigoRoute
   PerfilRoute: typeof PerfilRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  SolicitacoesRoute: typeof SolicitacoesRoute
   PetIdRoute: typeof PetIdRoute
 }
 
@@ -245,6 +258,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/solicitacoes': {
+      id: '/solicitacoes'
+      path: '/solicitacoes'
+      fullPath: '/solicitacoes'
+      preLoaderRoute: typeof SolicitacoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/pet/$id': {
       id: '/pet/$id'
       path: '/pet/$id'
@@ -266,6 +286,7 @@ const rootRouteChildren: RootRouteChildren = {
   PainelAbrigoRoute: PainelAbrigoRoute,
   PerfilRoute: PerfilRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  SolicitacoesRoute: SolicitacoesRoute,
   PetIdRoute: PetIdRoute,
 }
 export const routeTree = rootRouteImport

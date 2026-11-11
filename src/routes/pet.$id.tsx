@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import { TabScreen } from "@/components/adopet/AppShell";
 import { FavButton } from "@/components/adopet/bits";
+import { AdoptButton } from "@/components/adopet/AdoptDialog";
 import { coatLabel, formatAge, getPet, getShelter, sexLabel, sizeLabel } from "@/data/pets";
 
 export const Route = createFileRoute("/pet/$id")({
@@ -38,6 +39,7 @@ function PetPage() {
         </dl>
         <p className="text-sm">{pet.personality}</p>
         <div className="rounded-xl bg-teal-soft p-3 text-sm text-teal"><p className="font-semibold">{s.name}</p><p>{s.city} · {s.phone}</p></div>
+        <AdoptButton pet={pet} />
       </div>
     </TabScreen>
   );

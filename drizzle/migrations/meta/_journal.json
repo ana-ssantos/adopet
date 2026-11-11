@@ -8,6 +8,13 @@
       "when": 1794316703042,
       "tag": "0000_profiles_with_role",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794425165843,
+      "tag": "0001_adoption_requests",
+      "breakpoints": true
     }
   ]
 }
