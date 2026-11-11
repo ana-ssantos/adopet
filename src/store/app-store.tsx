@@ -62,7 +62,7 @@ export interface Conversation {
 interface Store {
   ready: boolean;
   user: User | null;
-  register: (u: SignUpInput) => Promise<{ error?: string; needsConfirmation: boolean }>;
+  register: (u: SignUpInput) => Promise<{ error?: string }>;
   login: (email: string, password: string) => Promise<{ error?: string; role?: Role }>;
   logout: () => Promise<void>;
   favorites: string[];
@@ -159,13 +159,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const register = useCallback<Store["register"]>(async ({ email, password, ...meta }) => {
-    const { data, error } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.signUp({
       email: email.trim().toLowerCase(),
       password,
-      options: { emailRedirectTo: `${window.location.origin}/login`, data: meta },
+      options: { data: meta },
     });
-    if (error) return { error: translateAuthError(error.message), needsConfirmation: false };
-    return { needsConfirmation: !data.session };
+    if (error) return { error: translateAuthError(error.message) };
+    return {};
   }, []);
   const login = useCallback<Store["login"]>(async (email, password) => {
     const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim().toLowerCase(), password });

@@ -45,7 +45,7 @@ function CadastroAbrigo() {
     const r = await register({ role: "abrigo", name: f.name.trim(), email: f.email, phone: f.phone, document: f.cnpj.trim() || undefined, password: f.password });
     setLoading(false);
     if (r.error) return void toast.error(r.error);
-    toast.success("Cadastro realizado!", { description: r.needsConfirmation ? "Confirme pelo link enviado ao seu e-mail e faça login." : "Agora é só fazer login." });
+    toast.success("Cadastro realizado!", { description: "Agora é só fazer login." });
     navigate({ to: "/login" });
   };
 
