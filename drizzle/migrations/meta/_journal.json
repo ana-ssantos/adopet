@@ -15,6 +15,13 @@
       "when": 1794425165843,
       "tag": "0001_adoption_requests",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794425363647,
+      "tag": "0002_shelter_pets",
+      "breakpoints": true
     }
   ]
 }

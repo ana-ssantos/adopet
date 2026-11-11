@@ -56,6 +56,72 @@ export type Database = {
         }
         Relationships: []
       }
+      pets: {
+        Row: {
+          age_years: number
+          breed: string
+          coat: string
+          created_at: string
+          dewormed: boolean
+          id: string
+          name: string
+          neutered: boolean
+          personality: string
+          photo_url: string | null
+          sex: string
+          shelter_city: string
+          shelter_name: string
+          shelter_phone: string
+          shelter_user_id: string
+          size: string
+          species: string
+          status: string
+          vaccinated: boolean
+        }
+        Insert: {
+          age_years?: number
+          breed?: string
+          coat: string
+          created_at?: string
+          dewormed?: boolean
+          id?: string
+          name: string
+          neutered?: boolean
+          personality?: string
+          photo_url?: string | null
+          sex: string
+          shelter_city?: string
+          shelter_name?: string
+          shelter_phone?: string
+          shelter_user_id?: string
+          size: string
+          species: string
+          status?: string
+          vaccinated?: boolean
+        }
+        Update: {
+          age_years?: number
+          breed?: string
+          coat?: string
+          created_at?: string
+          dewormed?: boolean
+          id?: string
+          name?: string
+          neutered?: boolean
+          personality?: string
+          photo_url?: string | null
+          sex?: string
+          shelter_city?: string
+          shelter_name?: string
+          shelter_phone?: string
+          shelter_user_id?: string
+          size?: string
+          species?: string
+          status?: string
+          vaccinated?: boolean
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           age: number | null
