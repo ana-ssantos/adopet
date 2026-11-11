@@ -15,7 +15,7 @@ export function AdoptButton({ pet }: { pet: Pet }) {
   const [open, setOpen] = useState(false);
   const [already, setAlready] = useState<boolean | null>(null);
   const [form, setForm] = useState({ name: "", phone: "", housing: "", has_other_pets: "", reason: "" });
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<Partial<Record<"name" | "phone" | "housing" | "has_other_pets" | "reason", string>>>({});
   const [sending, setSending] = useState(false);
 
   useEffect(() => {
@@ -29,7 +29,7 @@ export function AdoptButton({ pet }: { pet: Pet }) {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const er: Record<string, string> = {};
+    const er: typeof errors = {};
     if (form.name.trim().length < 2) er.name = "Informe seu nome";
     if (form.phone.replace(/\D/g, "").length < 10) er.phone = "Telefone inválido";
     if (!form.housing) er.housing = "Escolha o tipo de moradia";
