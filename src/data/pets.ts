@@ -46,6 +46,7 @@ export interface Pet {
   shelterId: string;
   personality: string;
   photos: string[];
+  status?: "disponivel" | "em_processo";
 }
 
 export const shelters: Shelter[] = [
@@ -76,8 +77,12 @@ export const pets: Pet[] = [
 
 export const cities = ["Rio de Janeiro - RJ", "Niterói - RJ", "São Gonçalo - RJ", "Duque de Caxias - RJ", "Nova Iguaçu - RJ", "Petrópolis - RJ", "Volta Redonda - RJ", "Campos dos Goytacazes - RJ", "Cabo Frio - RJ"];
 
-export const getShelter = (id: string) => shelters.find((s) => s.id === id)!;
-export const getPet = (id: string) => pets.find((x) => x.id === id);
+/** Abrigos e pets vindos do banco (cadastrados pelos abrigos), registrados em tempo de execução. */
+export const dbShelters = new Map<string, Shelter>();
+export const dbPets = new Map<string, Pet>();
+const fallbackShelter = (id: string): Shelter => ({ id, name: "Abrigo", short: "Abrigo", city: "", phone: "", avatar: imgApc });
+export const getShelter = (id: string) => shelters.find((s) => s.id === id) ?? dbShelters.get(id) ?? fallbackShelter(id);
+export const getPet = (id: string) => pets.find((x) => x.id === id) ?? dbPets.get(id);
 
 export const formatAge = (y: number) => {
   if (y < 1) {

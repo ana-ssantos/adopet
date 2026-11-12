@@ -3,6 +3,8 @@ import { ArrowLeft } from "lucide-react";
 import { TabScreen } from "@/components/adopet/AppShell";
 import { FavButton } from "@/components/adopet/bits";
 import { AdoptButton } from "@/components/adopet/AdoptDialog";
+import { useEffect, useState } from "react";
+import { fetchDbPets } from "@/lib/db-pets";
 import { coatLabel, formatAge, getPet, getShelter, sexLabel, sizeLabel } from "@/data/pets";
 
 export const Route = createFileRoute("/pet/$id")({
@@ -17,7 +19,11 @@ export const Route = createFileRoute("/pet/$id")({
 
 function PetPage() {
   const { id } = Route.useParams();
+  const [, setTick] = useState(0);
+  const [loaded, setLoaded] = useState(false);
   const pet = getPet(id);
+  useEffect(() => { if (!getPet(id)) fetchDbPets().then(() => { setLoaded(true); setTick((t) => t + 1); }); else setLoaded(true); }, [id]);
+  if (!pet && !loaded) return <TabScreen><p className="p-6 text-sm text-muted-foreground">Carregando...</p></TabScreen>;
   if (!pet) return <TabScreen><p className="p-6">Pet não encontrado.</p></TabScreen>;
   const s = getShelter(pet.shelterId);
   const yes = (b: boolean) => (b ? "Sim" : "Não");
@@ -39,7 +45,9 @@ function PetPage() {
         </dl>
         <p className="text-sm">{pet.personality}</p>
         <div className="rounded-xl bg-teal-soft p-3 text-sm text-teal"><p className="font-semibold">{s.name}</p><p>{s.city} · {s.phone}</p></div>
-        <AdoptButton pet={pet} />
+        {pet.status === "em_processo"
+          ? <p className="rounded-xl bg-accent p-3 text-center text-sm font-semibold text-accent-foreground">Em processo de adoção</p>
+          : <AdoptButton pet={pet} />}
       </div>
     </TabScreen>
   );

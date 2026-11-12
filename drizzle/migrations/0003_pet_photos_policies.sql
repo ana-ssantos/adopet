@@ -1,0 +1,2 @@
+CREATE POLICY "pet photos upload own folder" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'pet-photos' AND (storage.foldername(name))[1] = auth.uid()::text);
+CREATE POLICY "pet photos delete own" ON storage.objects FOR DELETE TO authenticated USING (bucket_id = 'pet-photos' AND (storage.foldername(name))[1] = auth.uid()::text);

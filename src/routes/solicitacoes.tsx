@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { TabScreen, TealHeader } from "@/components/adopet/AppShell";
 import { getPet, getShelter } from "@/data/pets";
+import { fetchDbPets } from "@/lib/db-pets";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/solicitacoes")({
@@ -26,8 +27,8 @@ const statusStyle: Record<string, string> = {
 function Solicitacoes() {
   const [rows, setRows] = useState<{ id: string; pet_id: string; shelter_id: string; status: string; created_at: string }[] | null>(null);
   useEffect(() => {
-    supabase.from("adoption_requests").select("id, pet_id, shelter_id, status, created_at").order("created_at", { ascending: false })
-      .then(({ data }) => setRows(data ?? []));
+    fetchDbPets().then(() => supabase.from("adoption_requests").select("id, pet_id, shelter_id, status, created_at").order("created_at", { ascending: false })
+      .then(({ data }) => setRows(data ?? [])));
   }, []);
   return (
     <TabScreen>

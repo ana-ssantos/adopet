@@ -21,7 +21,7 @@ export function AdoptButton({ pet }: { pet: Pet }) {
   useEffect(() => {
     if (!user) return;
     setForm((f) => ({ ...f, name: f.name || user.name, phone: f.phone || user.phone }));
-    supabase.from("adoption_requests").select("id").eq("pet_id", pet.id).maybeSingle().then(({ data }) => setAlready(!!data));
+    supabase.from("adoption_requests").select("id").eq("pet_id", pet.id).eq("user_id", user.id).maybeSingle().then(({ data }) => setAlready(!!data));
   }, [user, pet.id]);
 
   if (!user) return <Button asChild size="lg" className="w-full"><Link to="/login">Quero adotar</Link></Button>;

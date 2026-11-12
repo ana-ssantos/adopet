@@ -1,0 +1,1 @@
+CREATE POLICY "pet photos read signed in" ON storage.objects FOR SELECT TO authenticated USING (bucket_id = 'pet-photos');

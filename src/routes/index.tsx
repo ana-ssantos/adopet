@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { coatLabel, pets, sexLabel, sizeLabel } from "@/data/pets";
 import { countFilters, emptyFilters, useApp, type Filters } from "@/store/app-store";
 import { filterPets, type Category } from "@/lib/filter-pets";
+import { useDbPets } from "@/lib/db-pets";
 
 export const Route = createFileRoute("/")({
   head: () => ({ meta: [
@@ -50,7 +51,8 @@ function Home() {
   // Skeleton breve ao entrar/trocar categoria (simula carregamento)
   useEffect(() => { setLoading(true); setVisible(PAGE); const t = setTimeout(() => setLoading(false), 450); return () => clearTimeout(t); }, [cat]);
 
-  const list = useMemo(() => filterPets(pets, q, cat, filters), [q, cat, filters]);
+  const { list: fromDb } = useDbPets();
+  const list = useMemo(() => filterPets([...(fromDb ?? []), ...pets], q, cat, filters), [fromDb, q, cat, filters]);
 
   // Rolagem infinita
   useEffect(() => {
