@@ -6,10 +6,23 @@ describe("regras de senha", () => {
     expect(validatePassword("1234567", "1234567").password).toBeDefined();
   });
   it("aceita senha com 8 caracteres e confirmação igual", () => {
-    expect(validatePassword("12345678", "12345678")).toEqual({});
+    expect(validatePassword("abc12345", "abc12345")).toEqual({});
+  });
+  it("aceita exatamente 8 caracteres com letras e números", () => {
+    expect(validatePassword("abcd1234", "abcd1234")).toEqual({});
+  });
+  it("ignora espaços acidentais", () => {
+    expect(validatePassword(" abcd1234 ", "abcd1234")).toEqual({});
+  });
+  it("aponta falta de letra e falta de número", () => {
+    expect(validatePassword("12345678", "12345678").password).toMatch(/letra/);
+    expect(validatePassword("abcdefgh", "abcdefgh").password).toMatch(/número/);
+  });
+  it("não compara antes de preencher a confirmação", () => {
+    expect(validatePassword("abcd1234", "").confirm).toBe("Confirme sua senha");
   });
   it("exige confirmação igual à senha", () => {
-    expect(validatePassword("12345678", "12345679").confirm).toBeDefined();
+    expect(validatePassword("abc12345", "abc12346").confirm).toBeDefined();
   });
 });
 

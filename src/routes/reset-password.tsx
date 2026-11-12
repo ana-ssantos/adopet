@@ -28,7 +28,7 @@ function Reset() {
       <form noValidate className="m-4 mt-12 space-y-4 rounded-2xl bg-card p-5 shadow-card" onSubmit={async (e) => {
         e.preventDefault(); setSent(true);
         if (Object.keys(errors).length) return;
-        const { error } = await supabase.auth.updateUser({ password });
+        const { error } = await supabase.auth.updateUser({ password: password.trim() });
         if (error) return void toast.error("Link expirado ou inválido. Solicite outro.");
         toast.success("Senha atualizada!");
         navigate({ to: "/login" });

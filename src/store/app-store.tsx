@@ -107,7 +107,8 @@ const translateAuthError = (m: string) => {
   if (/invalid login/i.test(m)) return "E-mail ou senha inválidos";
   if (/not confirmed/i.test(m)) return "Confirme seu e-mail antes de entrar";
   if (/already registered/i.test(m)) return "Este e-mail já está cadastrado";
-  if (/password/i.test(m)) return "Senha fraca ou inválida. Use ao menos 8 caracteres";
+  if (/pwned|leaked|compromised|known|weak/i.test(m)) return "Essa senha é muito comum ou já apareceu em vazamentos. Escolha outra";
+  if (/password/i.test(m)) return "Senha inválida. Use no mínimo 8 caracteres, com letras e números";
   return "Não foi possível concluir. Tente novamente.";
 };
 
@@ -115,10 +116,15 @@ const translateAuthError = (m: string) => {
 export const homeFor = (role: Role) => (role === "abrigo" ? "/painel-abrigo" : "/") as "/" | "/painel-abrigo";
 
 /** Regras de senha compartilhadas por tutor e abrigo. */
-export const validatePassword = (password: string, confirm: string) => {
+export const validatePassword = (rawPassword: string, rawConfirm: string) => {
+  const password = rawPassword.trim();
+  const confirm = rawConfirm.trim();
   const e: { password?: string; confirm?: string } = {};
-  if (password.length < 8) e.password = "A senha precisa ter ao menos 8 caracteres";
-  if (confirm !== password) e.confirm = "As senhas não coincidem";
+  if (password.length < 8) e.password = "A senha precisa ter no mínimo 8 caracteres";
+  else if (!/[A-Za-z]/.test(password)) e.password = "A senha precisa ter pelo menos uma letra";
+  else if (!/[0-9]/.test(password)) e.password = "A senha precisa ter pelo menos um número";
+  if (!confirm) e.confirm = "Confirme sua senha";
+  else if (password && confirm !== password) e.confirm = "As senhas não coincidem";
   return e;
 };
 
@@ -161,14 +167,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const register = useCallback<Store["register"]>(async ({ email, password, ...meta }) => {
     const { error } = await supabase.auth.signUp({
       email: email.trim().toLowerCase(),
-      password,
+      password: password.trim(),
       options: { data: meta },
     });
     if (error) return { error: translateAuthError(error.message) };
     return {};
   }, []);
   const login = useCallback<Store["login"]>(async (email, password) => {
-    const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim().toLowerCase(), password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim().toLowerCase(), password: password.trim() });
     if (error || !data.user) return { error: translateAuthError(error?.message ?? "") };
     const profile = await fetchProfile(data.user.id);
     if (!profile) return { error: "Perfil não encontrado para esta conta" };
