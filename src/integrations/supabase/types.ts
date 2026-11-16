@@ -56,6 +56,77 @@ export type Database = {
         }
         Relationships: []
       }
+      conversations: {
+        Row: {
+          abrigo_id: string
+          abrigo_nome: string
+          adotante_id: string
+          adotante_nome: string
+          animal_id: string
+          animal_nome: string
+          created_at: string
+          id: string
+          ultima_em: string
+        }
+        Insert: {
+          abrigo_id: string
+          abrigo_nome?: string
+          adotante_id?: string
+          adotante_nome?: string
+          animal_id: string
+          animal_nome?: string
+          created_at?: string
+          id?: string
+          ultima_em?: string
+        }
+        Update: {
+          abrigo_id?: string
+          abrigo_nome?: string
+          adotante_id?: string
+          adotante_nome?: string
+          animal_id?: string
+          animal_nome?: string
+          created_at?: string
+          id?: string
+          ultima_em?: string
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          conversa_id: string
+          criada_em: string
+          id: string
+          lida: boolean
+          remetente_id: string
+          texto: string
+        }
+        Insert: {
+          conversa_id: string
+          criada_em?: string
+          id?: string
+          lida?: boolean
+          remetente_id?: string
+          texto: string
+        }
+        Update: {
+          conversa_id?: string
+          criada_em?: string
+          id?: string
+          lida?: boolean
+          remetente_id?: string
+          texto?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversa_id_fkey"
+            columns: ["conversa_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pets: {
         Row: {
           age_years: number
@@ -163,7 +234,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_conv_member: { Args: { _conv: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never

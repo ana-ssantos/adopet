@@ -82,3 +82,28 @@ export function TabScreen({ children, nav = true }: { children: ReactNode; nav?:
 export function TealHeader({ children }: { children?: ReactNode }) {
   return <header className="bg-teal px-5 pb-5 pt-6 text-teal-foreground">{children}</header>;
 }
+
+const shelterTabs = [
+  { to: "/painel-abrigo", label: "Painel", icon: Home },
+  { to: "/mensagensdoador", label: "Mensagens", icon: MessageCircle },
+] as const;
+
+/** Barra inferior do abrigo. */
+export function ShelterNav() {
+  const path = useRouterState({ select: (s) => s.location.pathname });
+  return (
+    <nav aria-label="Navegação do abrigo" className="grid grid-cols-2 border-t bg-card px-2 pb-2 pt-1.5">
+      {shelterTabs.map(({ to, label, icon: Icon }) => {
+        const active = path.startsWith(to);
+        return (
+          <Link key={to} to={to} aria-current={active ? "page" : undefined}
+            className={cn("flex flex-col items-center gap-0.5 rounded-lg py-1.5 text-[11px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              active ? "text-teal" : "text-muted-foreground hover:text-foreground")}>
+            <span className={cn("rounded-full px-4 py-1 transition-colors", active && "bg-teal-soft")}><Icon className="size-5" /></span>
+            {label}
+          </Link>
+        );
+      })}
+    </nav>
+  );
+}

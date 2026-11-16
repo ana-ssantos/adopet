@@ -36,6 +36,13 @@
       "when": 1794488059133,
       "tag": "0004_pet_photos_read",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1794838291964,
+      "tag": "0005_shelter_chat",
+      "breakpoints": true
     }
   ]
 }

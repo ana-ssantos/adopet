@@ -16,10 +16,12 @@ import { Route as FavoritosRouteImport } from './routes/favoritos'
 import { Route as FiltroRouteImport } from './routes/filtro'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MensagensRouteImport } from './routes/mensagens'
+import { Route as MensagensdoadorRouteImport } from './routes/mensagensdoador'
 import { Route as PainelAbrigoRouteImport } from './routes/painel-abrigo'
 import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SolicitacoesRouteImport } from './routes/solicitacoes'
+import { Route as ChatIdRouteImport } from './routes/chat.$id'
 import { Route as PetIdRouteImport } from './routes/pet.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -57,6 +59,11 @@ const MensagensRoute = MensagensRouteImport.update({
   path: '/mensagens',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MensagensdoadorRoute = MensagensdoadorRouteImport.update({
+  id: '/mensagensdoador',
+  path: '/mensagensdoador',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PainelAbrigoRoute = PainelAbrigoRouteImport.update({
   id: '/painel-abrigo',
   path: '/painel-abrigo',
@@ -77,6 +84,11 @@ const SolicitacoesRoute = SolicitacoesRouteImport.update({
   path: '/solicitacoes',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ChatIdRoute = ChatIdRouteImport.update({
+  id: '/chat/$id',
+  path: '/chat/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PetIdRoute = PetIdRouteImport.update({
   id: '/pet/$id',
   path: '/pet/$id',
@@ -91,10 +103,12 @@ export interface FileRoutesByFullPath {
   '/filtro': typeof FiltroRoute
   '/login': typeof LoginRoute
   '/mensagens': typeof MensagensRoute
+  '/mensagensdoador': typeof MensagensdoadorRoute
   '/painel-abrigo': typeof PainelAbrigoRoute
   '/perfil': typeof PerfilRoute
   '/reset-password': typeof ResetPasswordRoute
   '/solicitacoes': typeof SolicitacoesRoute
+  '/chat/$id': typeof ChatIdRoute
   '/pet/$id': typeof PetIdRoute
 }
 export interface FileRoutesByTo {
@@ -105,10 +119,12 @@ export interface FileRoutesByTo {
   '/filtro': typeof FiltroRoute
   '/login': typeof LoginRoute
   '/mensagens': typeof MensagensRoute
+  '/mensagensdoador': typeof MensagensdoadorRoute
   '/painel-abrigo': typeof PainelAbrigoRoute
   '/perfil': typeof PerfilRoute
   '/reset-password': typeof ResetPasswordRoute
   '/solicitacoes': typeof SolicitacoesRoute
+  '/chat/$id': typeof ChatIdRoute
   '/pet/$id': typeof PetIdRoute
 }
 export interface FileRoutesById {
@@ -120,10 +136,12 @@ export interface FileRoutesById {
   '/filtro': typeof FiltroRoute
   '/login': typeof LoginRoute
   '/mensagens': typeof MensagensRoute
+  '/mensagensdoador': typeof MensagensdoadorRoute
   '/painel-abrigo': typeof PainelAbrigoRoute
   '/perfil': typeof PerfilRoute
   '/reset-password': typeof ResetPasswordRoute
   '/solicitacoes': typeof SolicitacoesRoute
+  '/chat/$id': typeof ChatIdRoute
   '/pet/$id': typeof PetIdRoute
 }
 export interface FileRouteTypes {
@@ -136,10 +154,12 @@ export interface FileRouteTypes {
     | '/filtro'
     | '/login'
     | '/mensagens'
+    | '/mensagensdoador'
     | '/painel-abrigo'
     | '/perfil'
     | '/reset-password'
     | '/solicitacoes'
+    | '/chat/$id'
     | '/pet/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -150,10 +170,12 @@ export interface FileRouteTypes {
     | '/filtro'
     | '/login'
     | '/mensagens'
+    | '/mensagensdoador'
     | '/painel-abrigo'
     | '/perfil'
     | '/reset-password'
     | '/solicitacoes'
+    | '/chat/$id'
     | '/pet/$id'
   id:
     | '__root__'
@@ -164,10 +186,12 @@ export interface FileRouteTypes {
     | '/filtro'
     | '/login'
     | '/mensagens'
+    | '/mensagensdoador'
     | '/painel-abrigo'
     | '/perfil'
     | '/reset-password'
     | '/solicitacoes'
+    | '/chat/$id'
     | '/pet/$id'
   fileRoutesById: FileRoutesById
 }
@@ -179,10 +203,12 @@ export interface RootRouteChildren {
   FiltroRoute: typeof FiltroRoute
   LoginRoute: typeof LoginRoute
   MensagensRoute: typeof MensagensRoute
+  MensagensdoadorRoute: typeof MensagensdoadorRoute
   PainelAbrigoRoute: typeof PainelAbrigoRoute
   PerfilRoute: typeof PerfilRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SolicitacoesRoute: typeof SolicitacoesRoute
+  ChatIdRoute: typeof ChatIdRoute
   PetIdRoute: typeof PetIdRoute
 }
 
@@ -237,6 +263,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MensagensRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/mensagensdoador': {
+      id: '/mensagensdoador'
+      path: '/mensagensdoador'
+      fullPath: '/mensagensdoador'
+      preLoaderRoute: typeof MensagensdoadorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/painel-abrigo': {
       id: '/painel-abrigo'
       path: '/painel-abrigo'
@@ -265,6 +298,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SolicitacoesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/chat/$id': {
+      id: '/chat/$id'
+      path: '/chat/$id'
+      fullPath: '/chat/$id'
+      preLoaderRoute: typeof ChatIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/pet/$id': {
       id: '/pet/$id'
       path: '/pet/$id'
@@ -283,10 +323,12 @@ const rootRouteChildren: RootRouteChildren = {
   FiltroRoute: FiltroRoute,
   LoginRoute: LoginRoute,
   MensagensRoute: MensagensRoute,
+  MensagensdoadorRoute: MensagensdoadorRoute,
   PainelAbrigoRoute: PainelAbrigoRoute,
   PerfilRoute: PerfilRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SolicitacoesRoute: SolicitacoesRoute,
+  ChatIdRoute: ChatIdRoute,
   PetIdRoute: PetIdRoute,
 }
 export const routeTree = rootRouteImport
