@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { ClipboardList, PawPrint, Plus } from "lucide-react";
 import { toast } from "sonner";
-import { PhoneFrame, RequireAuth, TealHeader } from "@/components/adopet/AppShell";
+import { PhoneFrame, RequireAuth, ShelterNav, TealHeader } from "@/components/adopet/AppShell";
 import { Field } from "@/components/adopet/bits";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -117,6 +117,7 @@ function Painel() {
           </div>
         </main>
         {user && <AddPetDialog open={adding} onOpenChange={setAdding} user={user} onSaved={load} />}
+        <ShelterNav />
       </RequireAuth>
     </PhoneFrame>
   );

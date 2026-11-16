@@ -26,7 +26,7 @@ export const Route = createFileRoute("/mensagensdoador")({
   ),
 });
 
-type Item = ConvRow & { last?: MsgRow; unread: number };
+type Item = ConvRow & { last: MsgRow | undefined; unread: number };
 
 function Lista() {
   const { user } = useApp();
