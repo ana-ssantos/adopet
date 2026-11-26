@@ -45,20 +45,6 @@ export const emptyFilters: Filters = { species: [], sex: [], size: [], coat: [],
 export const countFilters = (f: Filters) =>
   f.species.length + f.sex.length + f.size.length + f.coat.length + Number(f.vaccinated) + Number(f.dewormed) + Number(f.neutered) + (f.age[0] !== 0 || f.age[1] !== 15 ? 1 : 0);
 
-export interface Message {
-  id: string;
-  from: "me" | "shelter";
-  text?: string;
-  image?: string;
-  at: number;
-}
-export interface Conversation {
-  shelterId: string;
-  petId?: string;
-  messages: Message[];
-  unread: number;
-}
-
 interface Store {
   ready: boolean;
   user: User | null;
@@ -69,13 +55,11 @@ interface Store {
   toggleFavorite: (id: string) => void;
   filters: Filters;
   setFilters: (f: Filters) => void;
-  conversations: Record<string, Conversation>;
-  setConversation: (id: string, c: Conversation | ((prev?: Conversation) => Conversation)) => void;
 }
 
 const Ctx = createContext<Store | null>(null);
 
-const K = { fav: "adopet:favorites", filters: "adopet:filters", conv: "adopet:conversations" };
+const K = { fav: "adopet:favorites", filters: "adopet:filters" };
 const read = <T,>(k: string, d: T): T => {
   try {
     const v = localStorage.getItem(k);
@@ -85,18 +69,6 @@ const read = <T,>(k: string, d: T): T => {
   }
 };
 const write = (k: string, v: unknown) => localStorage.setItem(k, JSON.stringify(v));
-
-const minsAgo = (m: number) => Date.now() - m * 60_000;
-/** Conversas iniciais para a tela de Mensagens não começar vazia. */
-const seedConversations = (): Record<string, Conversation> => ({
-  apc: { shelterId: "apc", petId: "thor", unread: 0, messages: [
-    { id: "s1", from: "shelter", text: "Seja bem-vindo ao Abrigo Patinhas Cariocas! Vi que deseja falar sobre o nosso aumigo Thor, certo?", at: minsAgo(25) },
-    { id: "s2", from: "me", text: "Me conte sobre o Thor!", at: minsAgo(19) },
-  ] },
-  maa: { shelterId: "maa", petId: "max", unread: 1, messages: [
-    { id: "s3", from: "shelter", text: "Seja bem-vindo ao Meus Amigos Animais! Vi que deseja falar sobre o nosso aumigo Max, certo?", at: minsAgo(6) },
-  ] },
-});
 
 async function fetchProfile(uid: string): Promise<User | null> {
   const { data } = await supabase.from("profiles").select("id, role, name, email, phone, city, age, document").eq("id", uid).maybeSingle();
@@ -135,19 +107,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [filters, setFiltersState] = useState<Filters>(emptyFilters);
-  const [conversations, setConversations] = useState<Record<string, Conversation>>({});
 
   // Carrega do localStorage apenas no cliente (evita divergência no SSR)
   useEffect(() => {
     setFavorites(read(K.fav, []));
     setFiltersState(read(K.filters, emptyFilters));
-    setConversations(read(K.conv, null) ?? seedConversations());
+    // Conversas agora vêm do banco: apaga as de exemplo que versões antigas salvaram no navegador.
+    try { localStorage.removeItem("adopet:conversations"); } catch { /* ignora */ }
     setReady(true);
   }, []);
 
   useEffect(() => { if (dataReady) write(K.fav, favorites); }, [favorites, dataReady]);
   useEffect(() => { if (dataReady) write(K.filters, filters); }, [filters, dataReady]);
-  useEffect(() => { if (dataReady) write(K.conv, conversations); }, [conversations, dataReady]);
 
   // Sessão: carrega perfil (com role) sempre que o usuário entra/sai
   useEffect(() => {
@@ -183,12 +154,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, []);
   const logout = useCallback(async () => { await supabase.auth.signOut(); setUser(null); }, []);
   const toggleFavorite = useCallback((id: string) => setFavorites((f) => (f.includes(id) ? f.filter((x) => x !== id) : [...f, id])), []);
-  const setConversation = useCallback<Store["setConversation"]>((id, c) => {
-    setConversations((all) => ({ ...all, [id]: typeof c === "function" ? c(all[id]) : c }));
-  }, []);
 
-  const value = useMemo<Store>(() => ({ ready, user, register, login, logout, favorites, toggleFavorite, filters, setFilters: setFiltersState, conversations, setConversation }),
-    [ready, user, register, login, logout, favorites, toggleFavorite, filters, conversations, setConversation]);
+  const value = useMemo<Store>(() => ({ ready, user, register, login, logout, favorites, toggleFavorite, filters, setFilters: setFiltersState }),
+    [ready, user, register, login, logout, favorites, toggleFavorite, filters]);
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 
@@ -196,13 +164,4 @@ export const useApp = () => {
   const c = useContext(Ctx);
   if (!c) throw new Error("useApp fora do AppProvider");
   return c;
-};
-
-export const relativeTime = (at: number) => {
-  const m = Math.floor((Date.now() - at) / 60000);
-  if (m < 1) return "agora";
-  if (m < 60) return `${String(m).padStart(2, "0")} min`;
-  const h = Math.floor(m / 60);
-  if (h < 24) return `${h} h`;
-  return `${Math.floor(h / 24)} d`;
 };
