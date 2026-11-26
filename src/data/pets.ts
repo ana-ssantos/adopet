@@ -46,7 +46,7 @@ export interface Pet {
   shelterId: string;
   personality: string;
   photos: string[];
-  status?: "disponivel" | "em_processo";
+  status?: "disponivel" | "em_processo" | "adotado";
 }
 
 export const shelters: Shelter[] = [
