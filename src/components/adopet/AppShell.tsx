@@ -3,6 +3,7 @@ import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { Heart, Home, MessageCircle, User } from "lucide-react";
 import { homeFor, useApp, type Role } from "@/store/app-store";
 import { cn } from "@/lib/utils";
+import { useUnreadCount } from "@/lib/use-unread";
 
 /** Moldura de celular (centralizada no desktop, tela cheia no mobile). */
 export function PhoneFrame({ children }: { children: ReactNode }) {
@@ -37,8 +38,7 @@ const tabs = [
 
 export function BottomNav() {
   const path = useRouterState({ select: (s) => s.location.pathname });
-  const { conversations } = useApp();
-  const unread = Object.values(conversations).reduce((n, c) => n + c.unread, 0);
+  const unread = useUnreadCount();
   return (
     <nav aria-label="Navegação principal" className="grid grid-cols-4 border-t bg-card px-2 pb-2 pt-1.5">
       {tabs.map(({ to, label, icon: Icon }) => {

@@ -98,9 +98,11 @@ export function PetCard({ pet }: { pet: Pet }) {
   return (
     <article className="group overflow-hidden rounded-2xl bg-card shadow-card transition hover:-translate-y-0.5">
       <div className="relative aspect-square overflow-hidden bg-muted">
-        <img src={pet.photos[0]} alt={`Foto de ${pet.name}`} loading="lazy" className="size-full object-cover transition duration-500 group-hover:scale-105" />
+        <Link to="/pet/$id" params={{ id: pet.id }} aria-label={`Ver detalhes de ${pet.name}`} className="block size-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring">
+          <img src={pet.photos[0]} alt={`Foto de ${pet.name}`} loading="lazy" className="size-full object-cover transition duration-500 group-hover:scale-105" />
+        </Link>
         <FavButton petId={pet.id} className="absolute right-2 top-2" />
-        {pet.status === "em_processo" && <span className="absolute bottom-2 left-2 rounded-full bg-accent px-2 py-0.5 text-[10px] font-semibold text-accent-foreground">Em processo de adoção</span>}
+        {pet.status === "em_processo" && <span className="pointer-events-none absolute bottom-2 left-2 rounded-full bg-accent px-2 py-0.5 text-[10px] font-semibold text-accent-foreground">Em processo de adoção</span>}
       </div>
       <div className="space-y-1 p-3">
         <div className="flex items-baseline justify-between">
