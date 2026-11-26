@@ -1,13 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ArrowLeft, MoreVertical, Paperclip, SendHorizontal } from "lucide-react";
+import { ArrowLeft, MoreVertical, Paperclip, SendHorizontal, X } from "lucide-react";
 import { toast } from "sonner";
 import { PhoneFrame } from "@/components/adopet/AppShell";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
-import { initials, markRead, type ConvRow, type MsgRow } from "@/lib/chat";
+import { IMAGE_TYPES, MAX_IMAGE_MB, initials, markRead, shrinkImage, signedImageUrls, uploadChatImage, type ConvRow, type MsgRow } from "@/lib/chat";
 import { useApp } from "@/store/app-store";
 import { cn } from "@/lib/utils";
 
@@ -36,6 +36,9 @@ function Chat() {
   const [sending, setSending] = useState(false);
   const [profile, setProfile] = useState(false);
   const end = useRef<HTMLDivElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [pending, setPending] = useState<{ blob: Blob; url: string } | null>(null);
+  const [urls, setUrls] = useState<Record<string, string>>({});
 
   const load = useCallback(async () => {
     if (!user) return;
@@ -61,14 +64,43 @@ function Chat() {
 
   useEffect(() => { end.current?.scrollIntoView({ behavior: "smooth" }); }, [msgs.length]);
 
-  const send = async (t: string) => {
+  // Links temporários das imagens recebidas/enviadas
+  const asked = useRef(new Set<string>());
+  useEffect(() => {
+    const need = msgs.map((m) => m.imagem_path).filter((p): p is string => !!p && !asked.current.has(p));
+    if (!need.length) return;
+    need.forEach((p) => asked.current.add(p));
+    signedImageUrls(need).then((u) => setUrls((x) => ({ ...x, ...u })));
+  }, [msgs]);
+
+  const clearPending = () => { setPending((p) => { if (p) URL.revokeObjectURL(p.url); return null; }); };
+
+  const pick = async (file: File | undefined) => {
+    if (!file) return;
+    if (!IMAGE_TYPES.includes(file.type)) { toast.error("Escolha uma imagem JPG, PNG ou WebP."); return; }
+    if (file.size > MAX_IMAGE_MB * 1024 * 1024) { toast.error(`A imagem deve ter até ${MAX_IMAGE_MB} MB.`); return; }
+    try {
+      const blob = await shrinkImage(file);
+      clearPending();
+      setPending({ blob, url: URL.createObjectURL(blob) });
+    } catch { toast.error("Não foi possível abrir essa imagem."); }
+  };
+
+  const send = async (t: string, withImage = true) => {
     const texto = t.trim();
-    if (!texto || !user || sending) return;
+    const img = withImage ? pending : null;
+    if ((!texto && !img) || !user || sending) return;
     setSending(true);
-    const { data, error } = await supabase.from("messages").insert({ conversa_id: id, texto, remetente_id: user.id }).select().single();
+    let imagem_path: string | undefined;
+    if (img) {
+      try { imagem_path = await uploadChatImage(id, img.blob); }
+      catch { setSending(false); toast.error("Não foi possível enviar a imagem. Tente novamente."); return; }
+    }
+    const { data, error } = await supabase.from("messages").insert({ conversa_id: id, texto, remetente_id: user.id, imagem_path }).select().single();
     setSending(false);
     if (error) { toast.error("Não foi possível enviar. Tente novamente."); return; }
-    setText("");
+    if (withImage) setText("");
+    if (img) clearPending();
     setMsgs((all) => (all.some((x) => x.id === data.id) ? all : [...all, data]));
   };
 
@@ -87,7 +119,7 @@ function Chat() {
           <p className="truncate font-semibold">{other || "Conversa"}</p>
           {conv && <p className="truncate text-xs opacity-80">Sobre {conv.animal_nome}</p>}
         </div>
-        <button type="button" aria-label="Anexar" onClick={() => toast("Envio de anexos em breve.")} className="rounded-full p-2 hover:bg-primary-foreground/10"><Paperclip className="size-5" /></button>
+        <button type="button" aria-label="Anexar imagem" onClick={() => fileRef.current?.click()} className="rounded-full p-2 hover:bg-primary-foreground/10"><Paperclip className="size-5" /></button>
         <DropdownMenu>
           <DropdownMenuTrigger aria-label="Mais opções" className="rounded-full p-2 hover:bg-primary-foreground/10"><MoreVertical className="size-5" /></DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -105,7 +137,10 @@ function Chat() {
             <div key={m.id} className={cn("flex items-end gap-2", mine && "justify-end")}>
               {!mine && <span className="grid size-7 shrink-0 place-items-center rounded-full bg-teal text-[10px] font-semibold text-teal-foreground">{initials(other)}</span>}
               <div className={cn("max-w-[75%] rounded-2xl px-3 py-2 text-sm shadow-sm", mine ? "rounded-br-sm bg-teal text-teal-foreground" : "rounded-bl-sm bg-card")}>
-                <p className="whitespace-pre-wrap break-words">{m.texto}</p>
+                {m.imagem_path && (urls[m.imagem_path]
+                  ? <a href={urls[m.imagem_path]} target="_blank" rel="noreferrer"><img src={urls[m.imagem_path]} alt="Imagem enviada na conversa" loading="lazy" onLoad={() => end.current?.scrollIntoView()} className="mb-1 max-h-64 w-full rounded-xl object-cover" /></a>
+                  : <div className="mb-1 h-32 w-48 animate-pulse rounded-xl bg-muted" aria-label="Carregando imagem" />)}
+                {m.texto && <p className="whitespace-pre-wrap break-words">{m.texto}</p>}
                 <p className={cn("mt-1 text-right text-[10px]", mine ? "opacity-80" : "text-muted-foreground")}>{hhmm(m.criada_em)}</p>
               </div>
             </div>
@@ -118,13 +153,21 @@ function Chat() {
         <div className="border-t bg-card px-3 pb-3 pt-2">
           <div className="no-scrollbar mb-2 flex gap-2 overflow-x-auto">
             {quick.map((q) => (
-              <button key={q} type="button" onClick={() => send(q)} className="shrink-0 rounded-full border border-teal px-3 py-1 text-xs font-medium text-teal hover:bg-teal-soft">{q}</button>
+              <button key={q} type="button" onClick={() => send(q, false)} className="shrink-0 rounded-full border border-teal px-3 py-1 text-xs font-medium text-teal hover:bg-teal-soft">{q}</button>
             ))}
           </div>
+          {pending && (
+            <div className="mb-2 flex items-center gap-3 rounded-xl bg-muted p-2">
+              <img src={pending.url} alt="Prévia da imagem a enviar" className="size-16 rounded-lg object-cover" />
+              <p className="flex-1 text-xs text-muted-foreground">Imagem pronta para enviar. Você pode escrever uma legenda.</p>
+              <button type="button" onClick={clearPending} aria-label="Remover imagem" className="rounded-full p-2 hover:bg-background"><X className="size-4" /></button>
+            </div>
+          )}
+          <input ref={fileRef} type="file" accept={IMAGE_TYPES.join(",")} hidden onChange={(e) => { pick(e.target.files?.[0]); e.target.value = ""; }} />
           <form className="flex items-center gap-2" onSubmit={(e) => { e.preventDefault(); send(text); }}>
-            <input aria-label="Mensagem" value={text} onChange={(e) => setText(e.target.value)} placeholder="Digite sua mensagem"
+            <input aria-label="Mensagem" value={text} onChange={(e) => setText(e.target.value)} placeholder={pending ? "Legenda (opcional)" : "Digite sua mensagem"}
               className="h-11 flex-1 rounded-full border bg-background px-4 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring" />
-            <Button type="submit" size="icon" variant="teal" className="size-11 rounded-full" disabled={!text.trim() || sending} aria-label="Enviar"><SendHorizontal className="size-5" /></Button>
+            <Button type="submit" size="icon" variant="teal" className="size-11 rounded-full" disabled={(!text.trim() && !pending) || sending} aria-label="Enviar"><SendHorizontal className="size-5" /></Button>
           </form>
         </div>
       )}

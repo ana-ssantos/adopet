@@ -22,12 +22,15 @@ const statusStyle: Record<string, string> = {
   pendente: "bg-secondary text-secondary-foreground",
   aprovada: "bg-teal-soft text-teal",
   recusada: "bg-destructive/10 text-destructive",
+  concluida: "bg-teal-soft text-teal",
+  cancelada: "bg-destructive/10 text-destructive",
 };
+const statusLabel: Record<string, string> = { pendente: "Pendente", aprovada: "Aprovada", recusada: "Recusada", concluida: "Doação concluída", cancelada: "Doação cancelada" };
 
 function Solicitacoes() {
   const [rows, setRows] = useState<{ id: string; pet_id: string; shelter_id: string; status: string; created_at: string }[] | null>(null);
   useEffect(() => {
-    fetchDbPets().then(() => supabase.from("adoption_requests").select("id, pet_id, shelter_id, status, created_at").order("created_at", { ascending: false })
+    fetchDbPets(undefined, true).then(() => supabase.from("adoption_requests").select("id, pet_id, shelter_id, status, created_at").order("created_at", { ascending: false })
       .then(({ data }) => setRows(data ?? [])));
   }, []);
   return (
@@ -42,7 +45,7 @@ function Solicitacoes() {
             <Link key={r.id} to="/pet/$id" params={{ id: r.pet_id }} className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-card">
               {pet && <img src={pet.photos[0]} alt={pet.name} className="size-14 rounded-xl object-cover" />}
               <div className="min-w-0 flex-1"><p className="font-semibold">{pet?.name ?? r.pet_id}</p><p className="truncate text-xs text-muted-foreground">{getShelter(r.shelter_id)?.name} · {new Date(r.created_at).toLocaleDateString("pt-BR")}</p></div>
-              <span className={`rounded-full px-2.5 py-1 text-xs font-semibold capitalize ${statusStyle[r.status] ?? ""}`}>{r.status}</span>
+              <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${statusStyle[r.status] ?? ""}`}>{statusLabel[r.status] ?? r.status}</span>
             </Link>
           );
         })}

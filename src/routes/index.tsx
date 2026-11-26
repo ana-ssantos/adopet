@@ -17,6 +17,7 @@ export const Route = createFileRoute("/")({
     { property: "og:title", content: "ADOPET — Cães e gatos para adoção no RJ" },
     { property: "og:description", content: "Navegue por cães e gatos de abrigos do Rio de Janeiro, filtre e favorite." },
   ] }),
+  validateSearch: (s: Record<string, unknown>): { q?: string } => ({ q: typeof s.q === "string" && s.q ? s.q : undefined }),
   component: Home,
 });
 
@@ -42,7 +43,8 @@ export function activeFilterChips(f: Filters): { label: string; remove: (f: Filt
 function Home() {
   const { filters, setFilters } = useApp();
   const navigate = useNavigate();
-  const [q, setQ] = useState("");
+  const { q: q0 } = Route.useSearch(); // busca vinda da tela de filtros
+  const [q, setQ] = useState(q0 ?? "");
   const [cat, setCat] = useState<Category>("todos");
   const [loading, setLoading] = useState(true);
   const [visible, setVisible] = useState(PAGE);
@@ -70,7 +72,7 @@ function Home() {
     <TabScreen>
       <TealHeader>
         <div className="mb-4 flex justify-center"><Logo /></div>
-        <SearchBar value={q} onChange={setQ} filterCount={n} onFilter={() => navigate({ to: "/filtro" })} />
+        <SearchBar value={q} onChange={setQ} filterCount={n} onFilter={() => navigate({ to: "/filtro", search: { q: q.trim() || undefined } })} />
       </TealHeader>
       <div className="no-scrollbar flex gap-2 overflow-x-auto px-4 pt-4">
         {cats.map((c) => <Chip key={c.id} active={cat === c.id} onClick={() => setCat(c.id)}>{c.label}</Chip>)}

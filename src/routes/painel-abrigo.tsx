@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { PhoneFrame, RequireAuth, ShelterNav, TealHeader } from "@/components/adopet/AppShell";
 import { Field } from "@/components/adopet/bits";
 import { Button } from "@/components/ui/button";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
@@ -25,7 +26,8 @@ export const Route = createFileRoute("/painel-abrigo")({
 });
 
 interface Req { id: string; pet_id: string; name: string; phone: string; housing: string; has_other_pets: boolean; reason: string; status: string; created_at: string }
-const statusLabel: Record<string, string> = { pendente: "Pendente", aprovada: "Aprovada", recusada: "Recusada" };
+const statusLabel: Record<string, string> = { pendente: "Pendente", aprovada: "Aprovada", recusada: "Recusada", concluida: "Doação concluída", cancelada: "Doação cancelada" };
+const petStatusLabel = { disponivel: "Disponível", em_processo: "Em processo de adoção", adotado: "Doação concluída" };
 const housingLabel: Record<string, string> = { casa: "Casa", apartamento: "Apartamento", outro: "Outro" };
 
 function Painel() {
@@ -35,6 +37,7 @@ function Painel() {
   const [reqs, setReqs] = useState<Req[] | null>(null);
   const [adding, setAdding] = useState(false);
   const [busy, setBusy] = useState<string | null>(null);
+  const [closing, setClosing] = useState<{ pet: Pet; status: "concluida" | "cancelada" } | null>(null);
 
   const load = useCallback(async () => {
     if (!user) return;
@@ -51,6 +54,22 @@ function Painel() {
     setBusy(null);
     if (error) { toast.error("Não foi possível atualizar. Tente novamente."); return; }
     toast.success(status === "aprovada" ? "Solicitação aprovada — pet em processo de adoção" : "Solicitação recusada");
+    load();
+  };
+
+  /** Conclui (pet sai da tela inicial dos tutores) ou cancela (pet volta a ficar disponível) a doação. */
+  const closeDonation = async () => {
+    if (!closing) return;
+    const { pet, status } = closing;
+    setBusy(pet.id);
+    const req = reqs?.find((r) => r.pet_id === pet.id && r.status === "aprovada");
+    const { error } = req
+      ? await supabase.from("adoption_requests").update({ status }).eq("id", req.id)
+      : await supabase.from("pets").update({ status: status === "concluida" ? "adotado" : "disponivel" }).eq("id", pet.id);
+    setBusy(null);
+    setClosing(null);
+    if (error) { toast.error("Não foi possível atualizar. Tente novamente."); return; }
+    toast.success(status === "concluida" ? `Doação concluída: ${pet.name} saiu da tela inicial` : `Doação cancelada: ${pet.name} voltou a ficar disponível`);
     load();
   };
 
@@ -98,10 +117,18 @@ function Painel() {
             <div className="flex items-center justify-between"><h2 className="font-semibold">Meus pets</h2><Button size="sm" onClick={() => setAdding(true)}><Plus className="size-4" />Cadastrar pet</Button></div>
             {myPets.length === 0 && <p className="rounded-2xl bg-card p-4 text-sm text-muted-foreground shadow-card">Cadastre seu primeiro pet para receber pedidos de adoção.</p>}
             {myPets.map((p) => (
-              <div key={p.id} className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-card">
-                <img src={p.photos[0]} alt={p.name} className="size-12 rounded-xl object-cover" />
-                <div className="flex-1"><p className="font-semibold">{p.name}</p><p className="text-xs text-muted-foreground">{p.breed || (p.species === "cao" ? "Cão" : "Gato")} · {formatAge(p.ageYears)}</p></div>
-                <span className="text-xs font-semibold text-teal">{p.status === "em_processo" ? "Em processo de adoção" : "Disponível"}</span>
+              <div key={p.id} className="space-y-3 rounded-2xl bg-card p-3 shadow-card">
+                <div className="flex items-center gap-3">
+                  <img src={p.photos[0]} alt={p.name} className="size-12 rounded-xl object-cover" />
+                  <div className="flex-1"><p className="font-semibold">{p.name}</p><p className="text-xs text-muted-foreground">{p.breed || (p.species === "cao" ? "Cão" : "Gato")} · {formatAge(p.ageYears)}</p></div>
+                  <span className="text-xs font-semibold text-teal">{petStatusLabel[p.status ?? "disponivel"]}</span>
+                </div>
+                {p.status === "em_processo" && (
+                  <div className="flex gap-2">
+                    <Button size="sm" className="flex-1" disabled={busy === p.id} onClick={() => setClosing({ pet: p, status: "concluida" })}>Concluir doação</Button>
+                    <Button size="sm" variant="outline" className="flex-1" disabled={busy === p.id} onClick={() => setClosing({ pet: p, status: "cancelada" })}>Cancelar doação</Button>
+                  </div>
+                )}
               </div>
             ))}
           </section>
@@ -117,6 +144,22 @@ function Painel() {
           </div>
         </main>
         {user && <AddPetDialog open={adding} onOpenChange={setAdding} user={user} onSaved={load} />}
+        <AlertDialog open={!!closing} onOpenChange={(o) => { if (!o) setClosing(null); }}>
+          <AlertDialogContent className="max-w-[350px] rounded-2xl">
+            <AlertDialogHeader>
+              <AlertDialogTitle>{closing?.status === "concluida" ? "Concluir doação?" : "Cancelar doação?"}</AlertDialogTitle>
+              <AlertDialogDescription>
+                {closing?.status === "concluida"
+                  ? `${closing.pet.name} sairá da tela inicial dos tutores e os outros pedidos pendentes serão recusados.`
+                  : `${closing?.pet.name} voltará a ficar disponível para novos pedidos de adoção.`}
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Voltar</AlertDialogCancel>
+              <AlertDialogAction onClick={closeDonation}>Confirmar</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
         <ShelterNav />
       </RequireAuth>
     </PhoneFrame>

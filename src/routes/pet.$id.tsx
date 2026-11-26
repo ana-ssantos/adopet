@@ -3,6 +3,8 @@ import { ArrowLeft } from "lucide-react";
 import { TabScreen } from "@/components/adopet/AppShell";
 import { FavButton } from "@/components/adopet/bits";
 import { AdoptButton } from "@/components/adopet/AdoptDialog";
+import { ChatButton } from "@/components/adopet/ChatButton";
+import { PhotoCarousel } from "@/components/adopet/PhotoCarousel";
 import { useEffect, useState } from "react";
 import { fetchDbPets } from "@/lib/db-pets";
 import { coatLabel, formatAge, getPet, getShelter, sexLabel, sizeLabel } from "@/data/pets";
@@ -30,9 +32,7 @@ function PetPage() {
   return (
     <TabScreen>
       <div className="relative">
-        <div className="no-scrollbar flex snap-x snap-mandatory overflow-x-auto">
-          {pet.photos.map((src, i) => <img key={src} src={src} alt={`${pet.name} foto ${i + 1}`} className="aspect-square w-full shrink-0 snap-center object-cover" />)}
-        </div>
+        <PhotoCarousel photos={pet.photos} name={pet.name} />
         <Link to="/" aria-label="Voltar" className="absolute left-3 top-3 grid size-9 place-items-center rounded-full bg-card shadow-card"><ArrowLeft className="size-5" /></Link>
         <FavButton petId={pet.id} className="absolute right-3 top-3" />
       </div>
@@ -45,9 +45,14 @@ function PetPage() {
         </dl>
         <p className="text-sm">{pet.personality}</p>
         <div className="rounded-xl bg-teal-soft p-3 text-sm text-teal"><p className="font-semibold">{s.name}</p><p>{s.city} · {s.phone}</p></div>
-        {pet.status === "em_processo"
-          ? <p className="rounded-xl bg-accent p-3 text-center text-sm font-semibold text-accent-foreground">Em processo de adoção</p>
-          : <AdoptButton pet={pet} />}
+        <div className="space-y-2">
+          {pet.status === "adotado"
+            ? <p className="rounded-xl bg-teal-soft p-3 text-center text-sm font-semibold text-teal">Doação concluída: este pet já foi adotado</p>
+            : pet.status === "em_processo"
+              ? <p className="rounded-xl bg-accent p-3 text-center text-sm font-semibold text-accent-foreground">Em processo de adoção</p>
+              : <AdoptButton pet={pet} />}
+          {pet.status !== "adotado" && <ChatButton pet={pet} />}
+        </div>
       </div>
     </TabScreen>
   );

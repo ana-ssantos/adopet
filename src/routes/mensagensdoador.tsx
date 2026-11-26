@@ -78,7 +78,7 @@ function Lista() {
                 <span className="grid size-12 shrink-0 place-items-center rounded-full bg-teal font-semibold text-teal-foreground">{initials(c.adotante_nome)}</span>
                 <div className="min-w-0 flex-1">
                   <p className={cn("truncate", c.unread > 0 ? "font-bold" : "font-semibold")}>{c.adotante_nome}</p>
-                  <p className="truncate text-sm text-muted-foreground">{c.last?.remetente_id === user?.id ? "Você: " : ""}{c.last?.texto ?? `Sobre ${c.animal_nome}`}</p>
+                  <p className="truncate text-sm text-muted-foreground">{c.last?.remetente_id === user?.id ? "Você: " : ""}{c.last?.texto || (c.last?.imagem_path ? "📷 Imagem" : `Sobre ${c.animal_nome}`)}</p>
                 </div>
                 <div className="flex flex-col items-end gap-1 text-xs text-muted-foreground">
                   {shortTime(c.last?.criada_em ?? c.ultima_em)}
