@@ -97,6 +97,7 @@ export type Database = {
           conversa_id: string
           criada_em: string
           id: string
+          imagem_path: string | null
           lida: boolean
           remetente_id: string
           texto: string
@@ -105,6 +106,7 @@ export type Database = {
           conversa_id: string
           criada_em?: string
           id?: string
+          imagem_path?: string | null
           lida?: boolean
           remetente_id?: string
           texto: string
@@ -113,6 +115,7 @@ export type Database = {
           conversa_id?: string
           criada_em?: string
           id?: string
+          imagem_path?: string | null
           lida?: boolean
           remetente_id?: string
           texto?: string
