@@ -14,16 +14,21 @@ export function rowToPet(r: Row, photo?: string): Pet {
     id: r.id, name: r.name, species: r.species as Species, breed: r.breed, ageYears: Number(r.age_years), size: r.size as Size,
     coat: r.coat as Coat, sex: r.sex as Sex, vaccinated: r.vaccinated, dewormed: r.dewormed, neutered: r.neutered,
     shelterId: r.shelter_user_id, personality: r.personality, photos: [photo ?? placeholder],
-    status: r.status === "em_processo" ? "em_processo" : "disponivel",
+    status: r.status === "em_processo" ? "em_processo" : r.status === "adotado" ? "adotado" : "disponivel",
   };
   dbPets.set(pet.id, pet);
   return pet;
 }
 
-/** Busca pets do banco (opcionalmente só de um abrigo) com fotos assinadas. */
-export async function fetchDbPets(ownerId?: string): Promise<Pet[]> {
+/**
+ * Busca pets do banco com fotos assinadas.
+ * Sem `ownerId` é a tela inicial dos tutores: pets já adotados ficam de fora.
+ * Use `includeAdopted` quando precisar do nome/foto de um pet adotado (ex.: histórico de solicitações).
+ */
+export async function fetchDbPets(ownerId?: string, includeAdopted = false): Promise<Pet[]> {
   let q = supabase.from("pets").select("*").order("created_at", { ascending: false });
   if (ownerId) q = q.eq("shelter_user_id", ownerId);
+  else if (!includeAdopted) q = q.neq("status", "adotado");
   const { data } = await q;
   const rows = data ?? [];
   const paths = rows.map((r) => r.photo_url).filter((x): x is string => !!x);
@@ -39,5 +44,12 @@ export function useDbPets(ownerId?: string) {
   const [list, setList] = useState<Pet[] | null>(null);
   const reload = useCallback(() => { fetchDbPets(ownerId).then(setList); }, [ownerId]);
   useEffect(reload, [reload]);
+  // Atualiza a lista quando um abrigo muda o status de um pet (ex.: doação concluída)
+  useEffect(() => {
+    const ch = supabase.channel(`pets-${Math.random().toString(36).slice(2)}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "pets" }, () => reload())
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [reload]);
   return { list, reload };
 }
